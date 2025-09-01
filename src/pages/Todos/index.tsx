@@ -68,10 +68,10 @@ const TodosPage = () => {
   const handleCreateTodo = (todo: Todo) => {
     toast.success('To do created successfully!');
     if (todo.is_favorite) {
-      setTodosFavorites([...todosFavorites, todo]);
+      setFilteredTodosFavorites([...filteredTodosFavorites, todo]);
       return;
     }
-    setTodos([...todos, todo]);
+    setFilteredTodos([...filteredTodos, todo]);
   };
 
   const handleDelete = (id: number) => {
