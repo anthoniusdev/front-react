@@ -9,14 +9,18 @@ import { toast } from "react-toastify";
 interface CardProps extends Todo {
   handleFavorite: (id: number) => void;
   handleDelete: (id: number) => void;
+  handleColorChange: (id: number, color: string) => void;
 }
 
 const Card: React.FC<CardProps> = (props) => {
   const [editMode, setEditMode] = useState<boolean>(false);
   const [title, setTitle] = useState<string>(props.title);
+  const [titleEdit, setTitleEdit] = useState<string>(props.title);
   const [description, setDescription] = useState<string>(props.description);
+  const [descriptionEdit, setDescriptionEdit] = useState<string>(props.description);
   const [isFavorite, setIsFavorite] = useState<boolean>(props.is_favorite);
   const [color, setColor] = useState<string>(props.color);
+  const [colorEdit, setColorEdit] = useState<string>(props.color);
 
   const openEditMode = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('button')) return;
@@ -25,9 +29,9 @@ const Card: React.FC<CardProps> = (props) => {
 
   const closeEditMode = () => {
     setEditMode(false);
-    setTitle(props.title);
-    setDescription(props.description);
-    setColor(props.color);
+    setTitleEdit(title);
+    setDescriptionEdit(description);
+    setColorEdit(color);
   };
 
   const handleSave = () => {
@@ -38,7 +42,12 @@ const Card: React.FC<CardProps> = (props) => {
   const handleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const response = await updateTodo(props.id, { ...props, is_favorite: !isFavorite });
+      const response = await updateTodo(props.id, {
+        title: title,
+        description: description,
+        is_favorite: !isFavorite,
+        color: color,
+      });
       if (!response.ok) {
         toast.error(response.message || "Failed to update todo");
         return;
@@ -53,33 +62,36 @@ const Card: React.FC<CardProps> = (props) => {
   };
 
   const toggleColor = (color: string) => {
-    setColor(color);
+    setColorEdit(color);
   };
 
   const handleEdit = async () => {
-    if (title === props.title && description === props.description && color === props.color && isFavorite === props.is_favorite) {
+    if (title === titleEdit && description === descriptionEdit && color === colorEdit && isFavorite === props.is_favorite) {
       toast.info("No changes made");
       return;
     }
-    if (!title || !description) {
+    if (!titleEdit || !descriptionEdit) {
       toast.error("All fields are required");
       return;
     }
     const response = await updateTodo(props.id, {
-      title,
-      description,
-      color,
+      title: titleEdit,
+      description: descriptionEdit,
+      color: colorEdit,
       is_favorite: isFavorite,
     });
-    console.log('response:', response);
     if (!response.ok) {
       toast.error(response.message || "Failed to update todo");
       return;
     }
     setTitle(response.data.title);
+    setTitleEdit(response.data.title);
     setDescription(response.data.description);
+    setDescriptionEdit(response.data.description);
     setColor(response.data.color);
+    setColorEdit(response.data.color);
     setIsFavorite(response.data.is_favorite);
+    props.handleColorChange(props.id, response.data.color);
     toast.success("To do updated successfully!");
 
   };
@@ -98,7 +110,7 @@ const Card: React.FC<CardProps> = (props) => {
   return (
     <div
       className={styles.Card}
-      style={{ backgroundColor: color }}
+      style={{ backgroundColor: editMode ? colorEdit : color }}
       onClick={openEditMode}
     >
       <Star
@@ -110,13 +122,13 @@ const Card: React.FC<CardProps> = (props) => {
         {editMode ? (
           <>
             <input
-              value={title}
-              onChange={e => setTitle(e.target.value)}
+              value={titleEdit}
+              onChange={e => setTitleEdit(e.target.value)}
               className={styles.inputTitle}
             />
             <textarea
-              value={description}
-              onChange={e => setDescription(e.target.value)}
+              value={descriptionEdit}
+              onChange={e => setDescriptionEdit(e.target.value)}
               className={styles.inputDescription}
             />
           </>

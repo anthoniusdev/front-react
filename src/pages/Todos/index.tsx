@@ -50,18 +50,32 @@ const TodosPage = () => {
   }, [search]);
 
   const handleFavorite = (id: number) => {
-    const todoIndex = todos.findIndex((todo) => todo.id === id);
+    const todoIndex = filteredTodos.findIndex((todo) => todo.id === id);
     if (todoIndex !== -1) {
-      const todo = { ...todos[todoIndex], is_favorite: true };
-      setTodos(todos.filter((t) => t.id !== id));
-      setTodosFavorites([...todosFavorites, todo]);
+      const todo = { ...filteredTodos[todoIndex], is_favorite: true };
+      setFilteredTodos(filteredTodos.filter((t) => t.id !== id));
+      setFilteredTodosFavorites([...filteredTodosFavorites, todo]);
       return;
     }
-    const favIndex = todosFavorites.findIndex((todo) => todo.id === id);
+    const favIndex = filteredTodosFavorites.findIndex((todo) => todo.id === id);
     if (favIndex !== -1) {
-      const todo = { ...todosFavorites[favIndex], is_favorite: false };
-      setTodosFavorites(todosFavorites.filter((t) => t.id !== id));
-      setTodos([...todos, todo]);
+      const todo = { ...filteredTodosFavorites[favIndex], is_favorite: false };
+      setFilteredTodosFavorites(filteredTodosFavorites.filter((t) => t.id !== id));
+      setFilteredTodos([...filteredTodos, todo]);
+    }
+  };
+
+  const handleColorChange = (id: number, color: string) => {
+    const todoIndex = filteredTodos.findIndex((todo) => todo.id === id);
+    if (todoIndex !== -1) {
+      const todo = { ...filteredTodos[todoIndex], color: color };
+      setFilteredTodos(filteredTodos.map((t) => (t.id === id ? todo : t)));
+      return;
+    }
+    const favIndex = filteredTodosFavorites.findIndex((todo) => todo.id === id);
+    if (favIndex !== -1) {
+      const todo = { ...filteredTodosFavorites[favIndex], color: color };
+      setFilteredTodosFavorites(filteredTodosFavorites.map((t) => (t.id === id ? todo : t)));
     }
   };
 
@@ -77,10 +91,10 @@ const TodosPage = () => {
   const handleDelete = (id: number) => {
     toast.success('To do deleted successfully!');
     if (todosFavorites.find((t) => t.id === id)) {
-      setTodosFavorites(todosFavorites.filter((t) => t.id !== id));
+      setFilteredTodosFavorites(filteredTodosFavorites.filter((t) => t.id !== id));
       return;
     }
-    setTodos(todos.filter((t) => t.id !== id));
+    setFilteredTodos(filteredTodos.filter((t) => t.id !== id));
   };
 
   return (
@@ -105,6 +119,7 @@ const TodosPage = () => {
                   id={todo.id}
                   handleFavorite={handleFavorite}
                   handleDelete={handleDelete}
+                  handleColorChange={handleColorChange}
                 />
               ))}
             </div>
@@ -122,6 +137,7 @@ const TodosPage = () => {
                   is_favorite={todo.is_favorite}
                   handleDelete={handleDelete}
                   handleFavorite={handleFavorite}
+                  handleColorChange={handleColorChange}
                   color={todo.color}
                   id={todo.id}
                 />
