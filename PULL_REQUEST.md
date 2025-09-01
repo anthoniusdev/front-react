@@ -1,4 +1,4 @@
-# Pull Request: Task Management Frontend
+# Pull Request: ToDo Management Frontend
 
 ## 🚀 Descrição do Frontend
 
@@ -63,7 +63,7 @@ Implementação do frontend do sistema de gerenciamento de tarefas utilizando Re
 
 ### 1. Clonar o Repositório
 ```bash
-git clone https://github.com/anthoniusdev/front-react
+git clone https://github.com/anthoniusdev/front-react.git
 cd front-react
 ```
 Você terá duas opções de instalação:
